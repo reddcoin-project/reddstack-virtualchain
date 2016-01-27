@@ -419,14 +419,22 @@ class Workpool(object):
         Stop the workpool with SIGTERM
         """
         for p in self.procs:
-            p.send_signal(signal.SIGTERM)
+            try:
+                p.send_signal( signal.SIGTERM )
+            except:
+                log.warn("Failed to send SIGTERM to %s" % p.pid)
+
 
     def kill(self):
         """
         Stop the workpool with SIGKILL
         """
         for p in self.procs:
-            p.send_signal(signal.SIGKILL)
+            try:
+                p.send_signal( signal.SIGKILL )
+            except:
+                log.warn("Failed to send SIGKILL to %s" % p.pid)
+
 
     def join(self, timeout=None):
         """
