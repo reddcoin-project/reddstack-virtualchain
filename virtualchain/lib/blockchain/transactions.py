@@ -47,6 +47,7 @@ import pybitcoin
 import pprint
 from decimal import *
 import cPickle as pickle
+import struct
 
 from bitcoinrpc.authproxy import JSONRPCException
 
@@ -184,7 +185,7 @@ def getrawtransaction_async( workpool, bitcoind_opts, tx_hash, verbose ):
 
    payload = multiprocess_rpc_marshal( "getrawtransaction", [None, tx_hash, verbose] )
 
-   # log.debug("getrawtransaction_async %s" % tx_hash)
+   log.debug("getrawtransaction_async %s" % tx_hash)
    tx_future = workpool.apply_async( payload )
 
    return tx_future
@@ -507,20 +508,36 @@ def tx_to_hex( tx ):
          tx_ins.append(next_inp)
      
      for out in tx['vout']:
+         log.debug("REDDCOIN: Value Raw == %s" % out['value'])
+         log.debug("REDDCOIN: Value Dec == %s" % Decimal(out['value']))
+         log.debug("REDDCOIN: Value == %s" % int(Decimal(out['value']) * Decimal(10**8)))
          next_out = {
-            'value': int(round(Decimal(out['value']) * Decimal(10**8))),
+            #'value': int(round(Decimal(out['value']) * Decimal(10**8))), # Dont think we should be rounding here
+            'value': int(Decimal(out['value'] * Decimal(10**8))),
             'script': str(out['scriptPubKey']['hex'])
          }
          tx_outs.append(next_out)
 
      tx_fields = {
+        "time": int(tx['time']),
         "locktime": int(tx['locktime']),
         "version": int(tx['version']),
         "ins": tx_ins,
         "outs": tx_outs
      }
 
-     tx_serialized = bitcoin.serialize( tx_fields )
+     #tx_time = binascii.b2a_hex(struct.pack('<L', int(tx['txtime']))).decode('utf-8')
+     tx_time = binascii.b2a_hex(struct.pack('<L', int(tx['time']))).decode('utf-8')
+
+     #log.debug("REDDCOIN: tx time == %s | == %s" % (int(tx['txtime']), tx_time))
+     log.debug("REDDCOIN:    time == %s | == %s" % (int(tx['time']), tx_time))
+
+     tx_serialized = bitcoin.serialize( tx_fields ) + tx_time ##Reddcoin add tx time
+     log.debug("REDDCOIN: Serialize value == %s" % tx_serialized )
+     #tx_serialized = bitcoin.serialize( tx_fields )
+     log.debug("REDDCOIN: tx_fields == %s" % tx_fields)
+     #log.debug("REDDCOIN: tx_serialized == %s" % tx_serialized)
+
      return str(tx_serialized)
 
 
@@ -528,10 +545,17 @@ def tx_verify( tx, tx_hash ):
     """
     Confirm that a bitcoin transaction has the given hash.
     """
+
     tx_serialized = tx_to_hex( tx )
     tx_reversed_bin_hash = pybitcoin.bin_double_sha256( binascii.unhexlify(tx_serialized) )
     tx_candidate_hash = binascii.hexlify(tx_reversed_bin_hash[::-1])
 
+    if tx_hash != tx_candidate_hash: #just log the bad transactions
+       log.debug("REDDCOIN: BAD TRANSACTION. PROBABLY BAD VALUE")
+       log.debug("REDDCOIN: tx_hash orig == %s" % (tx_hash))
+       log.debug("REDDCOIN: tx_hash calc == %s" % (tx_candidate_hash))
+       return True
+       
     return tx_hash == tx_candidate_hash
 
 

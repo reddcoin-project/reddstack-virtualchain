@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='virtualchain',
-    version='0.0.6',
+    version='0.0.7',
     url='https://github.com/blockstack/virtualchain',
     license='GPLv3',
     author='Blockstack.org',
@@ -40,7 +40,7 @@ setup(
         'pybitcoin>=0.9.7',
         'ecdsa>=0.11',
         'pybitcoin>=0.9.8',
-        'bitcoin>=1.1.39',
+        'bitcoin>=1.1.42',
         'python-bitcoinrpc>=0.1',
         'requests>=2.7.0',
         'utilitybelt>=0.2.6'
