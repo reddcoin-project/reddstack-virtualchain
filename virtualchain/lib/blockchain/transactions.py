@@ -52,8 +52,8 @@ import pprint
 from decimal import *
 import cPickle as pickle
 
-import session 
-log = session.log 
+import session
+log = session.get_logger()
 
 def get_bitcoind( bitcoind_or_opts ):
    """

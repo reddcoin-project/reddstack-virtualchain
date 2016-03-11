@@ -42,8 +42,9 @@ import cPickle as pickle
 import blockchain.session
 import copy
 import imp
+import platform 
 
-log = blockchain.session.log
+log = blockchain.session.get_logger()
 
 default_worker_env = {}
 
