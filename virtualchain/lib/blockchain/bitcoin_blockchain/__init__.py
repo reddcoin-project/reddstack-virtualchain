@@ -21,5 +21,7 @@
     along with Virtualchain.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+__version__ = '0.0.9.0'
+
 from .keys import ReddcoinPublicKey, ReddcoinPrivateKey, hex_hash160_to_address, script_hex_to_address, version_byte, analyze_private_key
 from authproxy import *

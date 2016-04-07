@@ -40,7 +40,7 @@ from .lib.blockchain import session
 #from pybitcoin import BitcoindClient, ChainComClient
 from pyreddcoin import BitcoindClient, ChainComClient
 
-log = session.get_logger()
+log = session.get_logger("virtualchain")
 
 # global instance of our implementation's state engine
 state_engine = None

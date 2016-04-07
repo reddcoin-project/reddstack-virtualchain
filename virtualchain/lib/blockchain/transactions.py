@@ -53,7 +53,7 @@ from decimal import *
 import cPickle as pickle
 
 import session
-log = session.get_logger()
+log = session.get_logger("virtualchain")
 
 def get_bitcoind( bitcoind_or_opts ):
    """
