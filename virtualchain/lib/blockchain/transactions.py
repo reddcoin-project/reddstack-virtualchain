@@ -532,7 +532,7 @@ def tx_to_hex( tx ):
      #log.debug("REDDCOIN: tx time == %s | == %s" % (int(tx['txtime']), tx_time))
      log.debug("REDDCOIN:    time == %s | == %s" % (int(tx['time']), tx_time))
 
-     tx_serialized = bitcoin.serialize( tx_fields ) + tx_time ##Reddcoin add tx time
+     tx_serialized = bitcoin.serialize( tx_fields )# + tx_time ##Reddcoin add tx time
      log.debug("REDDCOIN: Serialize value == %s" % tx_serialized )
      #tx_serialized = bitcoin.serialize( tx_fields )
      log.debug("REDDCOIN: tx_fields == %s" % tx_fields)
