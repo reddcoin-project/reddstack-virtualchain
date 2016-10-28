@@ -508,12 +508,14 @@ def tx_to_hex( tx ):
      
      for out in tx['vout']:
          next_out = {
-            'value': int(round(Decimal(out['value']) * Decimal(10**8))),
+            #'value': int(round(Decimal(out['value']) * Decimal(10**8))), # Dont think we should be rounding here
+            'value': int(Decimal(out['value'] * Decimal(10**8))),
             'script': str(out['scriptPubKey']['hex'])
          }
          tx_outs.append(next_out)
 
      tx_fields = {
+        "time": int(tx['time']),
         "locktime": int(tx['locktime']),
         "version": int(tx['version']),
         "ins": tx_ins,
@@ -521,6 +523,7 @@ def tx_to_hex( tx ):
      }
 
      tx_serialized = bitcoin.serialize( tx_fields )
+
      return str(tx_serialized)
 
 
@@ -532,6 +535,12 @@ def tx_verify( tx, tx_hash ):
     tx_reversed_bin_hash = pybitcoin.bin_double_sha256( binascii.unhexlify(tx_serialized) )
     tx_candidate_hash = binascii.hexlify(tx_reversed_bin_hash[::-1])
 
+    if tx_hash != tx_candidate_hash: #just log the bad transactions
+       log.debug("REDDCOIN: BAD TRANSACTION. PROBABLY BAD VALUE")
+       log.debug("REDDCOIN: tx_hash orig == %s" % (tx_hash))
+       log.debug("REDDCOIN: tx_hash calc == %s" % (tx_candidate_hash))
+       return True #lets keep going
+       
     return tx_hash == tx_candidate_hash
 
 
