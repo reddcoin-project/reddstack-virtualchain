@@ -65,12 +65,15 @@ if not globals().has_key('log'):
         log.setLevel(logging.DEBUG if DEBUG else logging.INFO)
         console = logging.StreamHandler()
         console.setLevel(logging.DEBUG if DEBUG else logging.INFO)
-        log_format = ('[%(levelname)s] [%(module)s:%(lineno)d] (' + str(os.getpid()) + ') %(message)s' if DEBUG else '%(message)s')
+        log_format = ('[%(asctime)s] [%(levelname)s] [%(module)s:%(lineno)d] (' + str(os.getpid()) + ') %(message)s' if DEBUG else '[%(asctime)s] %(message)s')
         formatter = logging.Formatter( log_format )
         console.setFormatter(formatter)
         log.propagate = False
         log.addHandler(console)
 
+# disable debug logging from bitcoinrpc
+bitcoinrpc_logger = logging.getLogger("BitcoinRPC")
+bitcoinrpc_logger.setLevel(logging.CRITICAL)
 
 class BitcoindConnection( httplib.HTTPSConnection ):
    """

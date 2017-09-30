@@ -39,7 +39,8 @@ from txjsonrpc.netstring import jsonrpc
 
 from .lib import config, workpool, indexer
 from .lib.blockchain import session
-from pybitcoin import BitcoindClient, ChainComClient
+#from pybitcoin import BitcoindClient, ChainComClient
+from pyreddcoin import BitcoindClient, ChainComClient
 
 log = session.log
 
