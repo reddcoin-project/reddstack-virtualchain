@@ -1,6 +1,7 @@
 commontools==0.1.0
 ecdsa==0.11
 pybitcoin==0.9.8
+pyreddcoin==0.9.9
 bitcoin==1.1.42
 pyreddcointools=1.1.42
 python-bitcoinrpc==0.1

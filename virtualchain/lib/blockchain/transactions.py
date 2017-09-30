@@ -40,10 +40,12 @@ import time
 import types
 import random
 import copy
-import bitcoin
+#import bitcoin
+import pyreddcointools
 import binascii
 import json
-import pybitcoin
+#import pybitcoin
+import pyreddcoin
 import pprint
 from decimal import *
 import cPickle as pickle
@@ -497,7 +499,7 @@ def tx_to_hex( tx ):
          if 'sequence' in inp:
              next_inp['sequence'] = int(inp['sequence'])
          else:
-             next_inp['sequence'] = pybitcoin.UINT_MAX
+             next_inp['sequence'] = pyreddcoin.UINT_MAX
 
          if 'scriptSig' in inp:
              next_inp['script'] = str(inp['scriptSig']['hex'])
@@ -522,8 +524,7 @@ def tx_to_hex( tx ):
         "outs": tx_outs
      }
 
-     tx_serialized = bitcoin.serialize( tx_fields )
-
+     tx_serialized = pyreddcointools.serialize( tx_fields )
      return str(tx_serialized)
 
 
@@ -532,7 +533,7 @@ def tx_verify( tx, tx_hash ):
     Confirm that a bitcoin transaction has the given hash.
     """
     tx_serialized = tx_to_hex( tx )
-    tx_reversed_bin_hash = pybitcoin.bin_double_sha256( binascii.unhexlify(tx_serialized) )
+    tx_reversed_bin_hash = pyreddcoin.bin_double_sha256( binascii.unhexlify(tx_serialized) )
     tx_candidate_hash = binascii.hexlify(tx_reversed_bin_hash[::-1])
 
     if tx_hash != tx_candidate_hash: #just log the bad transactions
@@ -558,7 +559,7 @@ def block_header_to_hex( block_data, prev_hash ):
        "hash": block_data['hash']
     }
 
-    return bitcoin.serialize_header( header_info )
+    return pyreddcointools.serialize_header( header_info )
 
 
 def block_header_verify( block_data, prev_hash, block_hash ):
@@ -566,7 +567,7 @@ def block_header_verify( block_data, prev_hash, block_hash ):
     Verify whether or not bitcoind's block header matches the hash we expect.
     """
     serialized_header = block_header_to_hex( block_data, prev_hash )
-    candidate_hash_bin_reversed = pybitcoin.bin_double_sha256(binascii.unhexlify(serialized_header))
+    candidate_hash_bin_reversed = pyreddcoin.bin_double_sha256(binascii.unhexlify(serialized_header))
     candidate_hash = binascii.hexlify( candidate_hash_bin_reversed[::-1] )
 
     return block_hash == candidate_hash
@@ -583,7 +584,7 @@ def block_verify( block_data ):
     """
      
     # verify block data txs 
-    m = pybitcoin.MerkleTree( block_data['tx'] )
+    m = pyreddcoin.MerkleTree( block_data['tx'] )
     root_hash = str(m.root())
 
     return root_hash == str(block_data['merkleroot'])
@@ -698,7 +699,7 @@ def get_nulldata_txs_in_blocks( workpool, bitcoind_opts, blocks_ids, first_block
 
           if not block_header_verify( block_datas[block_hash], prev_block_hash, block_hash ):
               serialized_header = block_header_to_hex( block_datas[block_hash], prev_block_hash )
-              candidate_hash_reversed = pybitcoin.bin_double_sha256(binascii.unhexlify(serialized_header))
+              candidate_hash_reversed = pyreddcoin.bin_double_sha256(binascii.unhexlify(serialized_header))
               candidate_hash = binascii.hexlify(candidate_hash_reversed[::-1])
               raise Exception("Hash mismatch on block %s: got invalid block hash (expected %s, got %s)" % (block_id, block_hash, candidate_hash))
 

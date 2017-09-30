@@ -37,7 +37,7 @@ setup(
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        'pybitcoin>=0.9.7',
+        'pyreddcoin>=0.9.9',
         'Twisted>=15.3.0',
         'txJSON-RPC>=0.3.1'
     ],

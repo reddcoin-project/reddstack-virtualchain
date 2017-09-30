@@ -22,7 +22,8 @@
 """
 
 import sys 
-import pybitcoin
+#import pybitcoin
+import pyreddcoin
 
 def get_nulldata(tx):
     if not ('vout' in tx):
@@ -52,7 +53,7 @@ def get_nulldata(tx):
             raw_opcode = script_pubkey['hex'][:2]
             
             hex_str = script_parts[1]
-            if hex_str != script_pubkey['hex'][4:] and ("0x" + str(raw_opcode) == hex(pybitcoin.transactions.opcodes.OP_RETURN)):
+            if hex_str != script_pubkey['hex'][4:] and ("0x" + str(raw_opcode) == hex(pyreddcoin.transactions.opcodes.OP_RETURN)):
                 
                 # get the raw hex, and remove the leading OP_RETURN code and length op
                 hex_str = script_pubkey['hex'][4:]
