@@ -38,7 +38,8 @@ import threading
 import time
 import socket
 import binascii
-import pybitcoin
+#import pybitcoin
+import pyreddcoin
 import copy
 import shutil
 import time
@@ -349,7 +350,7 @@ class StateEngine( object ):
         """
         Given the Merkle root of the set of records processed, calculate the consensus hash.
         """
-        return binascii.hexlify( pybitcoin.hash.bin_hash160(merkle_root, True)[0:16])
+        return binascii.hexlify( pyreddcoin.hash.bin_hash160(merkle_root, True)[0:16])
 
   
     @classmethod 
@@ -359,15 +360,15 @@ class StateEngine( object ):
         """
         record_hashes = []
         for serialized_op in serialized_ops:
-            record_hash = binascii.hexlify( pybitcoin.hash.bin_double_sha256( serialized_op ) )
+            record_hash = binascii.hexlify( pyreddcoin.hash.bin_double_sha256( serialized_op ) )
             record_hashes.append( record_hash )
 
         if len(record_hashes) == 0:
-            record_hashes.append( binascii.hexlify( pybitcoin.hash.bin_double_sha256( "" ) ) )
+            record_hashes.append( binascii.hexlify( pyreddcoin.hash.bin_double_sha256( "" ) ) )
 
         # put records into their own Merkle tree, and mix the root with the consensus hashes.
         record_hashes.sort()
-        record_merkle_tree = pybitcoin.MerkleTree( record_hashes )
+        record_merkle_tree = pyreddcoin.MerkleTree( record_hashes )
         record_root_hash = record_merkle_tree.root()
 
         return record_root_hash
@@ -383,7 +384,7 @@ class StateEngine( object ):
         # mix into previous consensus hashes...
         all_hashes = prev_consensus_hashes[:] + [record_root_hash]
         all_hashes.sort()
-        all_hashes_merkle_tree = pybitcoin.MerkleTree( all_hashes )
+        all_hashes_merkle_tree = pyreddcoin.MerkleTree( all_hashes )
         root_hash = all_hashes_merkle_tree.root()
 
         consensus_hash = StateEngine.calculate_consensus_hash( root_hash )
@@ -746,11 +747,20 @@ class StateEngine( object ):
         NOT THREAD SAFE
         """
         if self.pool is None:
-            return 
+            return True
 
         self.pool.close()
         self.pool.terminate()
-        self.pool.join()
+        rc = self.pool.join(timeout=5.0)
+        if not rc:
+            # some stragglers 
+            log.debug("Killing workpool stragglers")
+            self.pool.kill()
+            rc = self.pool.join(timeout=5.0)
+            if not rc:
+                log.error("FATAL: failed to join workpool")
+                sys.exit(1)
+
         self.pool = None
         return True
 
