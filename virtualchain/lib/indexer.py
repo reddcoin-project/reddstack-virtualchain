@@ -894,7 +894,10 @@ class StateEngine( object ):
         """
         valid_consensus_hashes = []
         first_block_to_check = block_id - config.BLOCKS_CONSENSUS_HASH_IS_VALID
-        for block_number in xrange(first_block_to_check, block_id+1):
+        last_block_to_check = block_id + 1
+        log.debug("Checking for valid hashes between %s & %s (Total %s blocks)" % (first_block_to_check, last_block_to_check, last_block_to_check - first_block_to_check))
+
+        for block_number in xrange(first_block_to_check, last_block_to_check):
             
             block_number_key = str(block_number)
             
