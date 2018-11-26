@@ -439,7 +439,7 @@ class Workpool(object):
         self.running = False
         still_running = []
         for p in self.procs:
-            log.debug("Wait on %s" % p.pid)
+            log.debug("Wait on %s, Timeout = %s" % (p.pid, timeout))
 
             if timeout is not None:
                 # poll every 0.1 seconds 
@@ -454,10 +454,12 @@ class Workpool(object):
                 if ret is None:
                     # did not join 
                     joined = False
+                    log.debug("%s still running" % p.pid)
                     still_running.append(p)
 
             else:
                 # wait indefinitely
+                log.debug("Waiting for %s indefinately" % p.pid)
                 p.wait()
 
         # join with coordinator
@@ -475,7 +477,9 @@ class Workpool(object):
 
         # reap dead processes 
         for p in self.procs:
+            log.debug("Checking for dead process %s" % p.pid)
             if p not in still_running:
+                log.debug("Reap dead process %s" % p.pid)            
                 self.reap_process(p)
         
         return joined
