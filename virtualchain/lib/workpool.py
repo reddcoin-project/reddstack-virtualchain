@@ -42,6 +42,8 @@ import cPickle as pickle
 import blockchain.session
 import copy
 import imp
+import platform
+import json
 
 log = blockchain.session.log
 
@@ -380,7 +382,13 @@ class Workpool(object):
         # start processes
         for i in xrange(0, num_workers):
 
-            p = subprocess.Popen([self.worker_bin_path] + worker_argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr, env=worker_env, close_fds=True)
+            try:
+                p = subprocess.Popen([self.worker_bin_path] + worker_argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr, env=worker_env, close_fds=True)
+            except Exception, e:
+                log.error("Failed to start worker process '%s'" % self.worker_bin_path)
+                log.error("Worker environment:\n%s" % json.dumps(self.worker_env, indent=4, sort_keys=True))
+                raise
+
             self.procs.append(p)
 
             # put into non-blocking mode
@@ -419,14 +427,22 @@ class Workpool(object):
         Stop the workpool with SIGTERM
         """
         for p in self.procs:
-            p.send_signal(signal.SIGTERM)
+            try:
+                p.send_signal( signal.SIGTERM )
+            except:
+                log.warn("Failed to send SIGTERM to %s" % p.pid)
+
 
     def kill(self):
         """
         Stop the workpool with SIGKILL
         """
         for p in self.procs:
-            p.send_signal(signal.SIGKILL)
+            try:
+                p.send_signal( signal.SIGKILL )
+            except:
+                log.warn("Failed to send SIGKILL to %s" % p.pid)
+
 
     def join(self, timeout=None):
         """
@@ -483,6 +499,7 @@ class Workpool(object):
                 self.reap_process(p)
         
         return joined
+
 
     def get_bufs(self):
         """
@@ -603,6 +620,7 @@ class Workpool(object):
 
         if proc in self.procs:
             self.procs.remove(proc)
+
 
     @classmethod
     def build_message(cls, key, payload):
