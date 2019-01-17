@@ -498,6 +498,7 @@ class Workpool(object):
                 log.debug("Reap dead process %s" % p.pid)            
                 self.reap_process(p)
         
+        log.debug("Joined: %s" % joined )
         return joined
 
 
@@ -901,7 +902,7 @@ def multiprocess_worker_main(mainloop_body):
         try:
             mainloop_body(key, payload)
         except:
-            print >> sys.stderr, "Worker %s exiting on exception" % os.getpid()
+            print >> sys.stderr, "Worker %s exiting on exception\n" % os.getpid()
             print >> sys.stderr, traceback.format_exc()
             sys.stderr.flush()
             break
