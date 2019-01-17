@@ -751,12 +751,12 @@ class StateEngine( object ):
 
         self.pool.close()
         self.pool.terminate()
-        rc = self.pool.join(timeout=5.0)
+        rc = self.pool.join(timeout=10.0)
         if not rc:
             # some stragglers 
             log.debug("Killing workpool stragglers")
             self.pool.kill()
-            rc = self.pool.join(timeout=5.0)
+            rc = self.pool.join(timeout=10.0)
             if not rc:
                 log.error("FATAL: failed to join workpool")
                 sys.exit(1)
