@@ -495,6 +495,11 @@ class Workpool(object):
         for p in self.procs:
             log.debug("Checking for dead process %s" % p.pid)
             if p not in still_running:
+                log.debug("%s not in still_running list. SIGKILL process and clean up" % p.pid)
+                try:
+                    p.send_signal( signal.SIGKILL )
+                except:
+                    log.warn("Failed to send SIGKILL to %s" % p.pid)
                 log.debug("Reap dead process %s" % p.pid)            
                 self.reap_process(p)
         
@@ -608,8 +613,10 @@ class Workpool(object):
         Join with a dead process, and clear out any of its futures.
         """
 
+        log.debug("Waiting for %s to terminate" % proc.pid)
         proc.wait()
 
+        log.debug("%s Terminated, clean up futures" % proc.pid)
         self.pending_output_lock.acquire()
 
         for key, future in self.pending_outputs.items():
