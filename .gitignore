@@ -57,3 +57,5 @@ target/
 
 # vim 
 *.swp
+/venv/
+/.idea/
