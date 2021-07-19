@@ -34,6 +34,8 @@ except:
    from virtualchain.lib.config import MULTIPROCESS_RPC_RETRY
    from virtualchain.lib.workpool import multiprocess_bitcoind, multiprocess_batch_size, multiprocess_rpc_marshal, multiprocess_bitcoind_opts, Workpool
 
+from .bitcoin_blockchain import JSONRPCException
+
 import logging
 import os
 import time
@@ -49,8 +51,6 @@ import pyreddcoin
 import pprint
 from decimal import *
 import cPickle as pickle
-
-from bitcoinrpc.authproxy import JSONRPCException
 
 import session 
 log = session.log 
