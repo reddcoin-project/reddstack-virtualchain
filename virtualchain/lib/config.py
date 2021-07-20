@@ -76,7 +76,7 @@ def get_working_dir():
         working_dir = IMPL.working_dir
 
     else:
-        working_dir = os.path.join(home, "." + IMPL.get_virtual_chain_name(testset=TESTSET))
+        working_dir = os.path.join(home, "." + IMPL.get_virtual_chain_name(testset=TESTSET) , ("testnet" if os.environ.get("BLOCKSTACK_TESTNET", None) == "1" else ""))
 
     if not os.path.exists(working_dir):
         os.makedirs(working_dir)
@@ -211,7 +211,7 @@ def get_bitcoind_config(config_file=None):
     if not loaded:
 
         bitcoind_server = 'btcd.onename.com'
-        bitcoind_port = '8332'
+        bitcoind_port = (55443 if os.environ.get("BLOCKSTACK_TESTNET", None) == "1" else 45443)
         bitcoind_user = 'openname'
         bitcoind_passwd = 'opennamesystem'
         bitcoind_use_https = True
