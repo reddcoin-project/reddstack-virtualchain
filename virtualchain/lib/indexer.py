@@ -46,6 +46,7 @@ import time
 import traceback
 import cPickle as pickle
 import imp
+import simplejson
 
 from collections import defaultdict 
 
@@ -439,7 +440,7 @@ class StateEngine( object ):
            all_values.append( str(len(str(field_value))) + ":" + str(field_value) )
 
         if len(missing) > 0:
-           print json.dumps( opdata, indent=4 )
+           log.error("Missing fields; dump follows:\n%s" % simplejson.dumps( opdata, indent=4, sort_keys=True ))
            raise Exception("BUG: missing fields '%s'" % (",".join(missing)))
 
         if verbose:
