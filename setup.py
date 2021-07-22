@@ -38,7 +38,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'pyreddcoin>=0.9.9',
-        'Twisted>=15.3.0',
+        'Twisted==15.3.0',
         'txJSON-RPC>=0.3.1'
     ],
     classifiers=[
