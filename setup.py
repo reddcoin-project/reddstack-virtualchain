@@ -39,7 +39,8 @@ setup(
     install_requires=[
         'pyreddcoin>=0.9.9',
         'Twisted==15.3.0',
-        'txJSON-RPC>=0.3.1'
+        'txJSON-RPC>=0.3.1',
+        'simplejson==3.8.2'
     ],
     classifiers=[
         'Intended Audience :: Developers',
